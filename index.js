@@ -103,100 +103,85 @@ var quoteArray =
 	"No one, he says, leaves this world in a different manner from one who has just been born. That is not true; for we are worse when we die than when we were born; but it is our fault, and not that of Nature."
 ];
 
-exports.handler = (event, context) => 
+exports.handler = (event, context) =>
 {
 
 	try{
-			if (event.session.new)
-			{
-				console.log("NEW SESSION");
-			}
+		if (event.session.new)
+		{
+			console.log("NEW SESSION")
+		}
 
-			switch (event.request.type)
-			{
-				case "LaunchRequest":
-					console.log("LAUNCH REQUEST");
+		switch (event.request.type)
+		{
+			case "LaunchRequest":
+				console.log("LAUNCH REQUEST")
+				context.succeed
+				(
+					generateResponse
+					(
+						buildSpeechletResponse("Welcome to the Alexa skill Seneca Quotes. Letters from a Stoic is a collection of letters written by Seneca, a Roman stoic philosopher. To hear a random quote from the book say, tell me a quote", false)
+					)
+				)
+			break;
+
+			case "IntentRequest":
+				console.log("INTENT REQUEST")
+
+				switch(event.request.intent.name)
+				{
+					case "GetQuote":
+					var index = Math.floor(Math.random() * quoteArray.length);
+					var randomQuote = quoteArray[index];
 					context.succeed
 					(
-						generateResponse
-						(
-							buildSpeechletResponse("Welcome to the Alexa skill Seneca Quotes. Letters from a Stoic is a collection of letters written by Seneca, a Roman stoic philosopher. To hear a random quote from the book say, tell me a quote", false)
-						)
-					);
-				break;
-                
-        
-                case "SessionEndedRequest":
-						console.log("SESSION ENEDED REQUEST");
-						context.succeed
-						(
-						
-						);
-				break;
-				
-				case "IntentRequest":
-					console.log("INTENT REQUEST");
-
-					switch(event.request.intent.name)
-					{
-						case "GetQuote":
-						var index = Math.floor(Math.random() * quoteArray.length);
-						var randomQuote = quoteArray[index];
-						context.succeed
-						(
-						    generateResponse
-						    (
-							    buildSpeechletResponse("Your random quote is: " + randomQuote + "       If you would like to hear another quote say, tell me another quote.", false)
-						    )
-						);
-						break;
-
-						case "AMAZON.CancelIntent":
-						context.succeed
-						(
-						    generateResponse
-							(
-							buildSpeechletResponse("Thanks for listening,    farewell!" , true)
-			
-							)
-						);
-						break;
-
-						case "AMAZON.StopIntent":
-						context.succeed
-						(
-						    generateResponse
-							(
-							buildSpeechletResponse("Thanks for listening,    farewell!" , true)
-			
-							)
-						);
-						break;
-
-						case "AMAZON.HelpIntent":
-						context.succeed
-						(
-						    generateResponse
-							(
-							buildSpeechletResponse("To hear a quote say give me a seneca quote, say a quote, or tell me a letters from a stoic quote " , false)
-			
-							)
-						);
-						break;
-					}
+					    generateResponse
+					    (
+						    buildSpeechletResponse("Your random quote is: " + randomQuote + "       If you would like to hear another quote say, tell me another quote.", false)
+					    )
+					)
 					break;
-		
-					
-				default:
-					context.fail('INVALID REQUEST TYPE: ${event.request.type}');
-			}
-	} 
+
+					case "AMAZON.CancelIntent":
+					context.succeed
+					(
+					    generateResponse
+						(
+						buildSpeechletResponse("Thanks for listening, goodbye!" , true)
+
+						)
+					)
+					break;
+
+					case "AMAZON.StopIntent":
+					context.succeed
+					(
+					    generateResponse
+						(
+						buildSpeechletResponse("Thanks for listening, goodbye!" , true)
+
+						)
+					)
+				}
+			break;
+
+			default:
+					context.succeed
+					(
+					    generateResponse
+						(
+						buildSpeechletResponse("To hear a Letters from a Stoic phrase say, tell me a quote, give me a seneca quote, or tell me a letters from a stoic quote." , false)
+
+						)
+					)
+		}
+	}
 
 	catch(error){context.fail('Exception: ${error}')}
 
-		
-	
-};
+
+
+}
 
 buildSpeechletResponse = (outputText, shouldEndSession) => {
 	return {
@@ -205,32 +190,13 @@ buildSpeechletResponse = (outputText, shouldEndSession) => {
 			text: outputText
 		},
 		shouldEndSession: shouldEndSession
-	};
-};
+	}
+}
 
 generateResponse = (speechletResponse) =>
 {
 	return {
 		version: "1.1",
 		response: speechletResponse
-	};
-};
-
-/*
---------------------------------------------------------------
- Example Phrases:
- Alexa, ask seneca quotes to say a quote.
- Give me a seneca quote
- Tell me a Letters from a Stoic quote.
---------------------------------------------------------------
-
-Intent Schema:
-{
-  "intents": [
-    {
-      "intent": "GetQuote"
-    }
-  ]
+	}
 }
-
-*/
